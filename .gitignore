@@ -387,4 +387,8 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+#Data
+data/
+metadata/
+
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm+all,visualstudiocode,sublimetext,windows,linux,macos
