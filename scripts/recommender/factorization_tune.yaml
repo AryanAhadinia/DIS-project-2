@@ -1,0 +1,31 @@
+program: train.py
+project: DIS2
+name: factorization_tune
+method: random
+metric:
+  goal: minimize
+  name: eval/loss
+parameters:
+  lr:
+    min: 0.00001
+    max: 0.1
+  P_lambda:
+    min: 0.0
+    max: 1.0
+  Q_lambda:
+    min: 0.0
+    max: 1.0
+  d:
+    values: [2, 8, 32, 128, 512]
+
+
+command:
+  - ${env}
+  - python3
+  - ${program}
+  - "--n_iter"
+  - "15"
+  - "--test"
+  - ${args}
+
+  
