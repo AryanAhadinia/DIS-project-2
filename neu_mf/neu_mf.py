@@ -28,15 +28,7 @@ for index, row in train_df.iterrows():
     rating = row["rating"]
     train_data_triplets.append((user_index, book_index, rating))
 
-test_data_triplets = []
-for index, row in test_df.iterrows():
-    user_index = user_id_to_index[row["user_id"]]
-    book_index = book_id_to_index[row["book_id"]]
-    test_data_triplets.append((user_index, book_index))
-
 train_data_array = np.array(train_data_triplets)
-train_data_array
-
 
 class RatingDataset(Dataset):
     def __init__(self, triplets):
