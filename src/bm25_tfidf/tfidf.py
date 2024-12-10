@@ -1,10 +1,8 @@
 import torch
-from tqdm import tqdm
 from scipy.sparse import csr_matrix
 
 from tqdm import tqdm
 from sklearn.preprocessing import normalize
-from scipy.sparse.linalg import norm
 
 import numpy as np
 
