@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 
-from src.bm25_tfidf.tokenizer import (
+from src.bm25_tfidf.text_tokenizer import (
     FrenchTokenizer,
     EnglishTokenizer,
     GermanTokenizer,

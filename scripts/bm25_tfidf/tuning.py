@@ -7,7 +7,7 @@ import pickle
 from typing import List
 from src.bm25_tfidf.bm25 import BM25
 
-from src.bm25_tfidf.tokenizer import (
+from src.bm25_tfidf.text_tokenizer import (
     FrenchTokenizer,
     EnglishTokenizer,
     GermanTokenizer,
