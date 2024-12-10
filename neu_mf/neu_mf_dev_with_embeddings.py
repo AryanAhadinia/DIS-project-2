@@ -209,6 +209,15 @@ def train_with_train_val_split(
 
     return best_val_rmse
 
+
+ray.init()
+
+
+train_dataset_id = ray.put(train_dataset)
+val_dataset_id = ray.put(val_dataset)
+book_id_to_embedding_id = ray.put(book_index_to_embedding)
+
+
 def train_with_config(config):
     mf_dim = config["mf_dim"]
     mlp_layers = config["mlp_layers"]
@@ -216,6 +225,9 @@ def train_with_config(config):
     lr = config["lr"]
     weight_decay = config["weight_decay"]
     batch_size = config["batch_size"]
+
+    train_dataset = ray.get(train_dataset_id)
+    val_dataset = ray.get(val_dataset_id)
 
     rmse = train_with_train_val_split(
         train_dataset,
@@ -245,8 +257,6 @@ config = {
 }
 
 train_with_config(config)
-
-ray.init()
 
 search_space = {
     "mf_dim": tune.grid_search([4, 8, 16]),
