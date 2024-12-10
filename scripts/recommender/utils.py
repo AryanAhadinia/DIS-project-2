@@ -46,7 +46,7 @@ def get_train_test(data, have_test=False):
     for _, row in tqdm(train.iterrows(), total=len(train), desc="Filling matrix R_train"):
         R_train[user_map[row['user_id']], item_map[row['book_id']]] = row['rating']
     R_test = None
-    if not have_test:
+    if have_test:
         R_test = np.full((len(user_id), len(item_id)), np.nan)
 
         for _, row in tqdm(test.iterrows(), total=len(test), desc="Filling matrix R_test"):

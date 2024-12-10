@@ -1,0 +1,8 @@
+numpy
+tqdm
+scipy
+scikit-learn
+spacy
+pandas
+setuptools
+wandb

@@ -1,7 +1,6 @@
 import string
 from typing import List
 
-import nltk
 import spacy
 import re
 

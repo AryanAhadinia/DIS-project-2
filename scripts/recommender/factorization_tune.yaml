@@ -16,7 +16,7 @@ parameters:
     min: 0.0
     max: 1.0
   d:
-    values: [2, 8, 32, 128, 512]
+    values: [1, 2, 8, 32, 128, 512]
 
 
 command:
