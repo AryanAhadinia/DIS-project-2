@@ -10,13 +10,9 @@ from torch.utils.data import Dataset, DataLoader
 train_df = pd.read_csv("../data/train.csv")
 test_df = pd.read_csv("../data/test.csv")
 
-all_user_ids = np.unique(
-    np.concatenate([train_df["user_id"].unique(), test_df["user_id"].unique()])
-)
+all_user_ids = np.unique(np.concatenate([train_df["user_id"].unique(), test_df["user_id"].unique()]))
 all_user_ids.sort()
-all_book_ids = np.unique(
-    np.concatenate([train_df["book_id"].unique(), test_df["book_id"].unique()])
-)
+all_book_ids = np.unique(np.concatenate([train_df["book_id"].unique(), test_df["book_id"].unique()]))
 all_book_ids.sort()
 
 user_id_to_index = {user_id: i for i, user_id in enumerate(all_user_ids)}
@@ -232,9 +228,7 @@ ray.init()
 
 search_space = {
     "mf_dim": tune.grid_search([4, 8, 16]),
-    "mlp_layers": tune.grid_search(
-        [[8, 4], [16, 4], [16, 8], [32, 16, 4], [32, 16, 8]]
-    ),
+    "mlp_layers": tune.grid_search([[8, 4], [16, 4], [16, 8], [32, 16, 4], [32, 16, 8]]),
     "dropout": tune.grid_search([0.1, 0.15, 0.20, 0.25]),
     "lr": tune.grid_search([1e-2, 5e-3, 1e-3]),
     "weight_decay": tune.grid_search([1e-3, 1e-4, 1e-5]),
