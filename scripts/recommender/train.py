@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 import wandb
 
-from scripts.recommender.utils import get_train_test
+from .utils import get_train_test
 from src.matrix_factorization.pq import PQ
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@ import argparse
 from pathlib import Path
 import gc
 
-from src.bm25_tfidf.tokenizer import (
+from src.bm25_tfidf.text_tokenizer import (
     FrenchTokenizer,
     EnglishTokenizer,
     GermanTokenizer,
