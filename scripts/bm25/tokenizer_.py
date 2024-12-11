@@ -62,6 +62,15 @@ def main():
     with open(output_file, "wb") as f:
         pickle.dump(tokenized_texts, f)
 
+    # save the book ids
+    book_ids = corpus_df["book_id"].tolist()
+    output_file = (
+        args.output_dir
+        / f"book_ids.pkl"
+    )
+    with open(output_file, "wb") as f:
+        pickle.dump(book_ids, f)
+
 
 if __name__ == "__main__":
     main()
