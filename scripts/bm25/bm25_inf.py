@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.bm25_tfidf.text_tokenizer import (
+from src.bm25.text_tokenizer import (
     EnglishTokenizer,
 )
 

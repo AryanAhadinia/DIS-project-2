@@ -1,13 +1,12 @@
-import string
 from typing import List
 
 import spacy
 import re
 
 import spacy.cli
+from docs.conf import author
 from tqdm import tqdm
 
-import importlib.resources
 
 
 class BaseTokenizer:
@@ -51,7 +50,7 @@ class BaseTokenizer:
         # Step 3: Remove excessive whitespace
         return re.sub(r"\s+", " ", text.replace("\n", " ")).strip().lower()
 
-    def tokenize(self, texts: List[str], batch_size: int = 32, n_process: int = 4) -> List[List[str]]:
+    def tokenize(self, authors: List[str], titles: List[str], texts: List[str], batch_size: int = 32, n_process: int = 4) -> List[List[str]]:
         """
         Tokenize texts.
         Args:
@@ -67,13 +66,14 @@ class BaseTokenizer:
             preprocessed_texts, batch_size=batch_size, n_process=n_process
         )
         tokenized_texts = [
+            author_.split() + title.split() +
             [
                 token.lemma_
                 for token in doc
                 if not token.is_stop
                 and not token.is_punct
             ]
-            for doc in tqdm(docs)
+            for doc, author_, title in tqdm(zip(docs, authors, titles), total=len(texts), desc="Tokenizing")
         ]
 
         return tokenized_texts

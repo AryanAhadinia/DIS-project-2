@@ -2,7 +2,7 @@ import argparse
 import pickle
 from pathlib import Path
 
-from src.bm25_tfidf.bm25 import BM25
+from src.bm25.bm25 import BM25
 
 if __name__ == "__main__":
     """
@@ -10,13 +10,13 @@ if __name__ == "__main__":
 
     Command-line Arguments:
         -dir, --token_dir (Path): Path to the directory containing the tokenized documents (default is './data').
-        -lang, --language (str): Language code for which to create the BM25 model. Choices are ['ar', 'de', 'en', 'es', 'fr', 'it', 'ko'].
+        -lang, --language (str): Language code for which to create the BM25 model. Choices are ['en'].
 
     Output:
         Saves a pickled BM25 model to the current directory as 'bm25_<language>.pkl'.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("-dir", "--token_dir", type=Path, default = "./data")
+    parser.add_argument("-dir", "--token_dir", type=Path, default = "../../data/tokenized_data")
     parser.add_argument("-lang", "--language", type=str, default='en', choices=['en'])
     args = parser.parse_args()
 
