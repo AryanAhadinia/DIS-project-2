@@ -18,12 +18,18 @@ class PQ:
         L = []
         L_test = []
         for n in tqdm(range(num_iterations)):
+            grads_P = np.zeros_like(self.P)
+            grads_Q = np.zeros_like(self.Q)
             for i, j in user_item_indices:
                 E[i, j] = data[i, j] - np.dot(self.P[i, :], self.Q[j, :].T)
                 gradient_P = 2 * E[i, j] * self.Q[j, :] - self.P_lambda * self.P[i, :]
                 gradient_Q = 2 * E[i, j] * self.P[i, :] - self.Q_lambda * self.Q[j, :]
-                self.P[i, :] += self.lr * np.clip(gradient_P, -1e3, 1e3)
-                self.Q[j, :] += self.lr * np.clip(gradient_Q, -1e3, 1e3)
+                # self.P[i, :] += self.lr * np.clip(gradient_P, -1e3, 1e3)
+                # self.Q[j, :] += self.lr * np.clip(gradient_Q, -1e3, 1e3)
+                grads_P[i, :] += gradient_P
+                grads_Q[j, :] += gradient_Q
+            self.P += self.lr * grads_P
+            self.Q += self.lr * grads_Q
             loss = self.compute_loss(data)
             L.append(loss)
             test_loss = None
