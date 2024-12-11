@@ -43,10 +43,7 @@ def main():
     assert args.corpus_df.exists(), "corpus_df does not exist"
     assert args.corpus_df.is_file(), "corpus_df is not a file"
 
-    assert args.output_dir.exists(), "output_dir does not exist"
-    assert args.output_dir.is_dir(), "output_dir is not a directory"
-
-    corpus_df = pd.read_csv(args.corpus_df)
+    corpus_df = pd.read_csv(args.corpus_df).dropna()
 
     tokenizer = EnglishTokenizer()
 
@@ -58,7 +55,7 @@ def main():
 
     output_file = (
         args.output_dir
-        / f"tokens_{args.language}.pkl"
+        / f"tokens.pkl"
     )
     os.makedirs(args.output_dir, exist_ok=True)
 

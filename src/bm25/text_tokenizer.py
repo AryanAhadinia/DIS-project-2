@@ -4,7 +4,6 @@ import spacy
 import re
 
 import spacy.cli
-from docs.conf import author
 from tqdm import tqdm
 
 
