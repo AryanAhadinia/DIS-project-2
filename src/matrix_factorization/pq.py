@@ -26,8 +26,8 @@ class PQ:
                 gradient_Q = 2 * E[i, j] * self.P[i, :] - self.Q_lambda * self.Q[j, :]
                 # self.P[i, :] += self.lr * np.clip(gradient_P, -1e3, 1e3)
                 # self.Q[j, :] += self.lr * np.clip(gradient_Q, -1e3, 1e3)
-                grads_P[i, :] += gradient_P
-                grads_Q[j, :] += gradient_Q
+                grads_P[i, :] += np.clip(gradient_P, -1e3, 1e3)
+                grads_Q[j, :] += np.clip(gradient_Q, -1e3, 1e3)
             self.P += self.lr * grads_P
             self.Q += self.lr * grads_Q
             loss = self.compute_loss(data)
