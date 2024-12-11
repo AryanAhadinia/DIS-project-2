@@ -27,7 +27,6 @@ if __name__ == "__main__":
     parser.add_argument("--wandb_group", type=str, default="PQ")
     parser.add_argument("--submit", action="store_true")
     parser.add_argument("--k", type=int, default=100)
-    parser.add_argument("--alpha", type=float, default=0.1)
     parser.add_argument("--skip_train", action="store_true")
     args = parser.parse_args()
 
@@ -78,7 +77,7 @@ if __name__ == "__main__":
     item_map = {b: j for j, b in enumerate(item_id)}
 
     book_id_to_index = {book_id: i for i, book_id in enumerate(book_ids)}
-    for k_ in range(args.k):
+    for k_ in range(1, args.k):
         R_ = R.copy()
         for b_id in tqdm(item_id, total=len(item_id)):
             if b_id not in book_id_to_index:
