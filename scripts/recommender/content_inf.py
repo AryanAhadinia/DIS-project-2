@@ -54,7 +54,7 @@ if __name__ == "__main__":
     train_data, test_data = get_train_test(data, args.test)
 
     if args.skip_train:
-        with open(args.output_dir / "pq_model.pkl", "rb") as f:
+        with open(args.output_dir / "pq_model_all.pkl", "rb") as f:
             pq_model = pickle.load(f)
     else:
         pq_model = PQ(len(data["user_id"].unique()), len(data["book_id"].unique()),
@@ -77,23 +77,30 @@ if __name__ == "__main__":
     item_map = {b: j for j, b in enumerate(item_id)}
 
     book_id_to_index = {book_id: i for i, book_id in enumerate(book_ids)}
-    for k_ in range(1, args.k):
-        R_ = R.copy()
-        for b_id in tqdm(item_id, total=len(item_id)):
-            if b_id not in book_id_to_index:
-                continue
-            inds_, scores_ = bm25_ind.match(docs[book_id_to_index[b_id]], k=k_)
-            inds = []
-            scores = []
-            for i, s in zip(inds_, scores_):
-                if book_ids[i] in item_map:
-                    inds.append(item_map[book_ids[i]])
-                    scores.append(s)
-            scores = np.array(scores) / np.sum(scores)
-            R_[:, item_map[b_id]] = np.sum(R[:, inds] * scores, axis=1)
-        R_[~np.isnan(train_data)] = train_data[~np.isnan(train_data)]
+    # for k_ in range(1, args.k):
+    R_ = R.copy()
+    for b_id in tqdm(item_id, total=len(item_id)):
+        if b_id not in book_id_to_index:
+            continue
+        # inds_, scores_ = bm25_ind.match(docs[book_id_to_index[b_id]], k=k_)
+        inds_, scores_ = bm25_ind.match(docs[book_id_to_index[b_id]], k=args.k)
+        inds = []
+        scores = []
+        for i, s in zip(inds_, scores_):
+            if book_ids[i] in item_map:
+                inds.append(item_map[book_ids[i]])
+                scores.append(s)
+        if len(inds) == 0:
+            continue
+        # make softmax
+        scores = np.array(scores)
+        scores = np.exp(scores - np.max(scores)) / np.sum(np.exp(scores - np.max(scores)))
+        # scores = np.array(scores) / np.sum(scores)
+        R_[:, item_map[b_id]] = np.sum(R[:, inds] * scores, axis=1)
+    R_[~np.isnan(train_data)] = train_data[~np.isnan(train_data)]
 
-        print(k_, np.sqrt(np.nanmean((test_data - R_)**2)))
+    # print(np.sqrt(np.nanmean((test_data - R_)**2)))
+    # print(k_, np.sqrt(np.nanmean((test_data - R_)**2)))
 
     if args.submit:
 
