@@ -26,7 +26,7 @@ if __name__ == "__main__":
     parser.add_argument("--test", action="store_true")
     parser.add_argument("--wandb_group", type=str, default="PQ")
     parser.add_argument("--submit", action="store_true")
-    parser.add_argument("--k", type=int, default=100)
+    parser.add_argument("--k", type=int, default=20)
     parser.add_argument("--skip_train", action="store_true")
     args = parser.parse_args()
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     train_data, test_data = get_train_test(data, args.test)
 
     if args.skip_train:
-        with open(args.output_dir / "pq_model_all.pkl", "rb") as f:
+        with open(args.output_dir / "pq_model.pkl", "rb") as f:
             pq_model = pickle.load(f)
     else:
         pq_model = PQ(len(data["user_id"].unique()), len(data["book_id"].unique()),
@@ -93,13 +93,14 @@ if __name__ == "__main__":
         if len(inds) == 0:
             continue
         # make softmax
-        scores = np.array(scores)
-        scores = np.exp(scores - np.max(scores)) / np.sum(np.exp(scores - np.max(scores)))
-        # scores = np.array(scores) / np.sum(scores)
+        # scores = np.array(scores)
+        # scores = np.exp(scores - np.max(scores)) / np.sum(np.exp(scores - np.max(scores)))
+        scores = np.array(scores) / np.sum(scores)
         R_[:, item_map[b_id]] = np.sum(R[:, inds] * scores, axis=1)
     R_[~np.isnan(train_data)] = train_data[~np.isnan(train_data)]
 
-    # print(np.sqrt(np.nanmean((test_data - R_)**2)))
+    if args.test:
+        print(np.sqrt(np.nanmean((test_data - R_)**2)))
     # print(k_, np.sqrt(np.nanmean((test_data - R_)**2)))
 
     if args.submit:
