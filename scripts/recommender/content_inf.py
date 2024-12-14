@@ -14,9 +14,9 @@ from src.bm25.bm25 import BM25
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-dir", "--token_dir", type=Path, default = "../../data/tokenized_data")
-    parser.add_argument("--output_dir", type=Path, default = "../../data")
-    parser.add_argument("--data_dir", type=Path, default="../../data")
+    parser.add_argument("-dir", "--token_dir", type=Path, default = "data/tokenized_data")
+    parser.add_argument("--output_dir", type=Path, default = "data")
+    parser.add_argument("--data_dir", type=Path, default="data")
     parser.add_argument("--d", type=int, default=8)
     parser.add_argument("--lr", type=float, default=0.004)
     parser.add_argument("--P_lambda", type=float, default=0.494)
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     parser.add_argument("--test", action="store_true")
     parser.add_argument("--wandb_group", type=str, default="PQ")
     parser.add_argument("--submit", action="store_true")
-    parser.add_argument("--k", type=int, default=20)
+    parser.add_argument("--k", type=int, default=50)
     parser.add_argument("--skip_train", action="store_true")
     args = parser.parse_args()
 
@@ -41,6 +41,9 @@ if __name__ == "__main__":
 
     with open(f'{args.token_dir}/book_ids.pkl', "rb") as f:
         book_ids = np.array(pickle.load(f))
+
+    with open('data/tokenized_data/authors.pkl', "rb") as f:
+        list_authors = np.array(pickle.load(f))
 
     lang_params = {
         "k1": 1.4, "b": 0.5
@@ -83,7 +86,15 @@ if __name__ == "__main__":
         if b_id not in book_id_to_index:
             continue
         # inds_, scores_ = bm25_ind.match(docs[book_id_to_index[b_id]], k=k_)
-        inds_, scores_ = bm25_ind.match(docs[book_id_to_index[b_id]], k=args.k)
+        idx = book_id_to_index[b_id]
+        inds_, scores_ = bm25_ind.match(docs[idx], k=args.k)
+        author = list_authors[idx]
+        ind_same_authors = np.where(list_authors == author)[0]
+        inds_same_authors = np.array([int(id) for id in ind_same_authors if id not in inds_])
+        if len(inds_same_authors) > 0:
+            inds_ = np.concatenate((inds_,inds_same_authors))
+            #scores_ = np.concatenate((scores_ , bm25_ind._scores(docs[idx])[ind_same_authors])) # ?
+            scores_ = np.concatenate((scores_ , np.ones(len(ind_same_authors))*max(scores_)/2)) # ?
         inds = []
         scores = []
         for i, s in zip(inds_, scores_):
@@ -101,6 +112,9 @@ if __name__ == "__main__":
 
     if args.test:
         print(np.sqrt(np.nanmean((test_data - R_)**2)))
+        error = test_data - R_
+        with open (args.output_dir / "error.pkl", "wb") as f:
+            pickle.dump(error, f)
     # print(k_, np.sqrt(np.nanmean((test_data - R_)**2)))
 
     if args.submit:

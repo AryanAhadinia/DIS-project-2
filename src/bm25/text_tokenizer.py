@@ -65,7 +65,8 @@ class BaseTokenizer:
             preprocessed_texts, batch_size=batch_size, n_process=n_process
         )
         tokenized_texts = [
-            author_.split() + title.split() +
+            #author_.split() + title.split() +
+            title.split() +
             [
                 token.lemma_
                 for token in doc

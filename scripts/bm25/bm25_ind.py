@@ -16,8 +16,8 @@ if __name__ == "__main__":
         Saves a pickled BM25 model to the current directory as 'bm25_<language>.pkl'.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("-dir", "--token_dir", type=Path, default = "../../data/tokenized_data")
-    parser.add_argument("--output_dir", type=Path, default = "../../data/bm25_models")
+    parser.add_argument("-dir", "--token_dir", type=Path, default = "data/tokenized_data")
+    parser.add_argument("--output_dir", type=Path, default = "data/bm25_models")
     args = parser.parse_args()
 
     with open(f'{args.token_dir}/tokens.pkl', "rb") as f:

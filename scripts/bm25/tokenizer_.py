@@ -6,6 +6,7 @@ import pandas as pd
 from typing import List
 import spacy
 import re
+import sys
 import os
 import spacy.cli
 from tqdm import tqdm
@@ -30,8 +31,8 @@ def main():
     """
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-c", "--corpus_df", type=Path, default="../../data/clean_data/metadata_clean.csv")
-    parser.add_argument("-o", "--output_dir", type=Path, default="../../data/tokenized_data")
+    parser.add_argument("-c", "--corpus_df", type=Path, default="data/clean_data/metadata_clean.csv")
+    parser.add_argument("-o", "--output_dir", type=Path, default="data/tokenized_data")
     parser.add_argument("-b", "--batch_size", type=int, default=64)
     parser.add_argument("--cores", type=int, default=10)
 
@@ -52,6 +53,8 @@ def main():
                                          corpus_df["description"].tolist(),
                                          batch_size=args.batch_size,
                                          n_process=args.cores)
+    
+    authors_list = corpus_df["author"].tolist()
 
     output_file = (
         args.output_dir
@@ -68,8 +71,19 @@ def main():
         args.output_dir
         / f"book_ids.pkl"
     )
+    
     with open(output_file, "wb") as f:
         pickle.dump(book_ids, f)
+
+    # save the authors
+    authors_list = corpus_df["author"].tolist()
+    output_file = (
+        args.output_dir
+        / f"authors.pkl"
+    )
+    
+    with open(output_file, "wb") as f:
+        pickle.dump(authors_list, f)
 
 
 if __name__ == "__main__":
