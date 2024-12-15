@@ -1,6 +1,6 @@
 # Document Retrieval Project - Team : MAM
 
-This repository contains the implementation of a multilingual document retrieval system as part of the course CS-423 Distributed Information System at EPFL. The goal is to create a system capable of ranking and retrieving documents according to their relevance to a user query. The corpus includes 268,022 documents spanning 7 languages: English, French, German, Spanish, Italian, Arabic, and Korean.
+This repository contains the implementation of a book recommender system as part of the course CS-423 Distributed Information System at EPFL. The goal is to create a recommender system capable of predicting the ratings of books by users.
 
 ## Dataset
 You can find the preprocessed data in Kaggle [here](https://www.kaggle.com/datasets/mansarip/dis1-preprocess). The data includes the following:
