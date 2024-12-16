@@ -8,7 +8,7 @@ The dataset provided for this project includes:
 - **train.csv**: Contains user ratings for books (training set).  
 - **test.csv**: Contains user/book pairs for which ratings need to be predicted.  
 
-All data is located in the `/data` folder. Additionally, we enhanced the dataset with metadata (title, author, description) stored in `/data/metadata/`.
+All data is located in the `/data` folder. Additionally, we enhanced the dataset with metadata (title, author, description) stored in `/data/clean_data/metadata_clean`.
 
 ## Repository Structure  
 - **data/**: Includes the datasets and variables required for the models.  
@@ -37,7 +37,10 @@ All data is located in the `/data` folder. Additionally, we enhanced the dataset
    ```bash
    pip install -e .
    ```
-4. To generate a submission run the `content_inf.py` file with `--submit` argument. 
+4. If you wish to execute the code for metadata gathering and tokenization, start by running the `data_preprocessing.py` script to preprocess the data. Please note that the API keys for ISBNdb and Google Books APIs included in the script may be outdated; you can replace them with your own keys if needed. Once the data is preprocessed, run the tokenizer_.py script to tokenize it.
+However, if you are working with the same books from the training set provided for the project, you do not need to run these scripts. The metadata and tokenized data for these books have already been processed and are available in the /data folder.
+    
+5. Finally to generate a submission run the `content_inf.py` file with `--submit` argument. 
 
 ## Contributors (Alphabetical Order)
 - Aryan Ahadinia
