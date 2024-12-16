@@ -1,5 +1,6 @@
 import argparse
 import pickle
+import random
 from pathlib import Path
 
 import numpy as np
@@ -28,10 +29,11 @@ if __name__ == "__main__":
         --test (bool): Whether to test the model (default is False).
         --wandb_group (str): Group name for wandb (default is 'PQ').
         --submit (bool): Whether to create a submission (default is False).
-        --k (int): Number of similar items to consider in the content-based filtering (default is 20).
+        --k (int): Number of similar items to consider in the content-based filtering (default is 50).
         --skip_train (bool): Whether to skip training and load the model from the output directory (default is False).
         --content_user (bool): Whether to use content-based filtering for users (default is False).
         --k_ (int): Number of similar users to consider in the user content-based filtering (default is 300).
+        --seed (int): Seed for random number generator (default is 0).
         Output:
         Saves a pickled matrix factorization model to the output directory as 'pq_model.pkl'.
     """
@@ -48,11 +50,15 @@ if __name__ == "__main__":
     parser.add_argument("--test", action="store_true")
     parser.add_argument("--wandb_group", type=str, default="PQ")
     parser.add_argument("--submit", action="store_true")
-    parser.add_argument("--k", type=int, default=20)
+    parser.add_argument("--k", type=int, default=50)
     parser.add_argument("--skip_train", action="store_true")
     parser.add_argument("--content_user", action="store_true")
     parser.add_argument("--k_", type=int, default=300)
+    parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
+
+    random.seed(args.seed)
+    np.random.seed(args.seed)
 
     if args.wandb_key != "":
         wandb.login(key=args.wandb_key)
@@ -96,6 +102,8 @@ if __name__ == "__main__":
 
     R = pq_model.P @ pq_model.Q.T
     R[~np.isnan(train_data)] = train_data[~np.isnan(train_data)]
+    if args.test:
+        print('base: ', np.sqrt(np.nanmean((test_data - R) ** 2)))
 
     user_id = data['user_id'].unique()
     item_id = data['book_id'].unique()
@@ -140,15 +148,16 @@ if __name__ == "__main__":
         print('testing')
         print(np.sqrt(np.nanmean((test_data - R_) ** 2)))
 
-        k_ = args.k_
-        R_f = 0.9 * R_
-        for u_ in tqdm(range(len(R_f))):
-            most_similar_users = np.argsort(all_scores[u_])[-k_-1:-1]
-            other_rating = np.sum(R_[most_similar_users, :] * all_scores[u_, most_similar_users][:, np.newaxis], axis=0) / np.sum(all_scores[u_, most_similar_users])
-            R_f[u_] += 0.1 * other_rating
+        if args.content_user:
+            k_ = args.k_
+            R_f = 0.9 * R_
+            for u_ in tqdm(range(len(R_f))):
+                most_similar_users = np.argsort(all_scores[u_])[-k_-1:-1]
+                other_rating = np.sum(R_[most_similar_users, :] * all_scores[u_, most_similar_users][:, np.newaxis], axis=0) / np.sum(all_scores[u_, most_similar_users])
+                R_f[u_] += 0.1 * other_rating
 
-        R_f[~np.isnan(train_data)] = train_data[~np.isnan(train_data)]
-        print(np.sqrt(np.nanmean((test_data - R_f)**2)))
+            R_f[~np.isnan(train_data)] = train_data[~np.isnan(train_data)]
+            print(np.sqrt(np.nanmean((test_data - R_f)**2)))
 
     if args.submit:
         print("Making submission")
