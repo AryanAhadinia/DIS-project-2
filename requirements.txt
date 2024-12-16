@@ -6,3 +6,4 @@ spacy
 pandas
 setuptools
 wandb
+torch

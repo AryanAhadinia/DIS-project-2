@@ -3,13 +3,7 @@ import pickle
 from pathlib import Path
 import pandas as pd
 
-from typing import List
-import spacy
-import re
-import sys
 import os
-import spacy.cli
-from tqdm import tqdm
 
 LANGS = ["en"]
 
