@@ -14,17 +14,21 @@ All data is located in the `/data` folder. Additionally, we enhanced the dataset
 
 ## Repository Structure
 
-- **data/**: Includes the datasets and variables required for the models.  
-- **scripts/**: Contains scripts for preprocessing, training, and evaluation.  
-  - `data_preprocess/`: Preprocessing metadata from external APIs.  
-  - `bm25/`: BM25 preprocessing, indexing, and retrieval scripts.  
-  - `recommender/`: Training, testing, and submission creation scripts for recommender models.  
-- **src/**: Main source code directory.  
-  - `bm25_tfidf/`: Implementation and utilities for the BM25 model.  
-  - `matrix_factorization/`: Implementation and utilities for matrix factorization models.  
-- **README.md**: Project overview and documentation (this file).  
-- **requirements.txt**: List of dependencies for the project.  
-- **setup.py**: Installation script for the package.  
+```txt
+.
+├── baseline                  # The baseline model (just for comparison).
+├── data                      # Includes the datasets and variables required for the models.  
+├── neu_mf                    # Implementation of the NeuMF model.
+├── requirements.txt          # List of dependencies for the project.
+├── scripts
+│   ├── bm25                  # BM25 preprocessing, indexing, and retrieval scripts. 
+│   ├── data_preprocess       # Preprocessing metadata from external APIs.
+│   └── recommender           # Training, testing, and submission creation scripts for recommender models.
+├── setup.py                  # Installation script for the package.
+└── src
+    ├── bm25                  # Implementation and utilities for the BM25 model.
+    └── matrix_factorization  # Implementation and utilities for matrix factorization models.
+```
 
 ## Installation  
 
