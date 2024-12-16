@@ -68,6 +68,9 @@ train_data_array = np.array(train_data_triplets)
 val_data_array = np.array(val_data_triplets)
 
 class RatingDataset(Dataset):
+    """
+    Dataset class for the rating data.
+    """
     def __init__(self, triplets, book_id_to_embedding):
         self.triplets = triplets
         self.book_id_to_embedding = book_id_to_embedding
@@ -89,6 +92,9 @@ train_dataset = RatingDataset(train_data_array, book_index_to_embedding)
 val_dataset = RatingDataset(val_data_array, book_index_to_embedding)
 
 class NeuMF(nn.Module):
+    """
+    Neural Matrix Factorization model.
+    """
     def __init__(
         self,
         num_users,
@@ -98,6 +104,16 @@ class NeuMF(nn.Module):
         dropout=0.2,
         embedding_dim=768,
     ):
+        """
+        Initialize the NeuMF model.
+        
+        Args:
+            num_users (int): Number of users.
+            num_items (int): Number of items.
+            mf_dim (int): Dimension of the matrix factorization embedding.
+            mlp_layers (List[int]): Number of units in each layer of the MLP.
+            dropout (float): Dropout rate.
+        """
         super(NeuMF, self).__init__()
 
         self.embedding_dim = embedding_dim
@@ -154,6 +170,23 @@ def train_with_train_val_split(
     patience,
     embedding_dim,
 ):
+    """
+    Train the NeuMF model with a train-validation split.
+
+    Args:
+        train_dataset (RatingDataset): Dataset for training.
+        val_dataset (RatingDataset): Dataset for validation.
+        num_users (int): Number of users.
+        num_items (int): Number of items.
+        mf_dim (int): Dimension of the matrix factorization embedding.
+        mlp_layers (List[int]): Number of units in each layer of the MLP.
+        dropout (float): Dropout rate.
+        lr (float): Learning rate.
+        weight_decay (float): Weight decay.
+        batch_size (int): Batch size.
+        epochs (int): Number of epochs.
+        patience (int): Patience for early stopping.
+    """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = NeuMF(
@@ -215,6 +248,15 @@ book_id_to_embedding_id = ray.put(book_index_to_embedding)
 
 
 def train_with_config(config):
+    """
+    Train the NeuMF model with a configuration.
+
+    Args:
+        config (dict): Configuration for training.
+
+    Returns:
+        dict: Results of training.
+    """
     mf_dim = config["mf_dim"]
     mlp_layers = config["mlp_layers"]
     dropout = config["dropout"]

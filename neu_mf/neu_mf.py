@@ -55,6 +55,9 @@ train_data_array = np.array(train_data_triplets)
 val_data_array = np.array(val_data_triplets)
 
 class RatingDataset(Dataset):
+    """
+    Dataset class for the rating data.
+    """
     def __init__(self, triplets):
         self.triplets = triplets
 
@@ -74,6 +77,16 @@ val_dataset = RatingDataset(val_data_array)
 
 class NeuMF(nn.Module):
     def __init__(self, num_users, num_items, mf_dim=8, mlp_layers=[16, 8], dropout=0.2):
+        """
+        Initialize the NeuMF model.
+        
+        Args:
+            num_users (int): Number of users.
+            num_items (int): Number of items.
+            mf_dim (int): Dimension of the matrix factorization embedding.
+            mlp_layers (List[int]): Number of units in each layer of the MLP.
+            dropout (float): Dropout rate.
+        """
         super(NeuMF, self).__init__()
 
         self.user_embedding_gmf = nn.Embedding(num_users, mf_dim)
@@ -127,6 +140,23 @@ def train_with_train_val_split(
     epochs,
     patience,
 ):
+    """
+    Train the NeuMF model with a train-validation split.
+
+    Args:
+        train_dataset (RatingDataset): Dataset for training.
+        val_dataset (RatingDataset): Dataset for validation.
+        num_users (int): Number of users.
+        num_items (int): Number of items.
+        mf_dim (int): Dimension of the matrix factorization embedding.
+        mlp_layers (List[int]): Number of units in each layer of the MLP.
+        dropout (float): Dropout rate.
+        lr (float): Learning rate.
+        weight_decay (float): Weight decay.
+        batch_size (int): Batch size.
+        epochs (int): Number of epochs.
+        patience (int): Patience for early stopping.
+    """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = NeuMF(num_users, num_items, mf_dim=mf_dim, mlp_layers=mlp_layers, dropout=dropout).to(device)
@@ -172,6 +202,15 @@ def train_with_train_val_split(
     return best_val_rmse
 
 def train_with_config(config):
+    """
+    Train the NeuMF model with a configuration.
+
+    Args:
+        config (dict): Configuration for training.
+
+    Returns:
+        dict: Results of training.
+    """
     mf_dim = config["mf_dim"]
     mlp_layers = config["mlp_layers"]
     dropout = config["dropout"]
