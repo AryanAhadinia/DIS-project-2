@@ -31,17 +31,22 @@ class PQ:
                 test_loss = self.compute_loss(test_data)
                 L_test.append(test_loss)
             if log_wandb:
+                train_abs_error = self.abs_error(data)
                 if test_data is None:
-                    result_dict = {'step': int(n), 'train/loss': float(loss)}
+                    result_dict = {'step': int(n), 'train/loss': float(loss), 'train/abs_error': float(train_abs_error)}
                 else:
                     result_dict = {'step': int(n), 'train/loss': float(loss),
-                                   'eval/loss': float(test_loss)}
+                                   'eval/loss': float(test_loss), 'train/abs_error': float(train_abs_error),
+                                      'eval/abs_error': float(self.abs_error(test_data))}
                 wandb.log(result_dict)
 
         return L, L_test
 
     def compute_loss(self, data):
         return np.sqrt(np.nanmean((data - np.dot(self.P, self.Q.T))**2))
+
+    def abs_error(self, data):
+        return np.nanmean(np.abs(data - np.dot(self.P, self.Q.T)))
 
     def predict(self, user_item_pairs):
         return np.sum(self.P[user_item_pairs[:, 0], :] * self.Q[user_item_pairs[:, 1], :], axis=1)
