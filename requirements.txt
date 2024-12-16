@@ -6,3 +6,5 @@ spacy
 pandas
 setuptools
 wandb
+langdetect
+deep_translator
