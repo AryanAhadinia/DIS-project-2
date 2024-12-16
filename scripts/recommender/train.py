@@ -10,6 +10,23 @@ from utils import get_train_test
 from src.matrix_factorization.pq import PQ
 
 if __name__ == "__main__":
+    """
+    Script for training a matrix factorization model.
+    Command-line Arguments:
+        --data_dir (Path): Path to the directory containing the data (default is '../../data').
+        --output_dir (Path): Path to the directory where the model will be saved (default is '').
+        --d (int): Dimension of the latent space (default is 1).
+        --lr (float): Learning rate (default is 0.01).
+        --P_lambda (float): Regularization parameter for P (default is 0.25).
+        --Q_lambda (float): Regularization parameter for Q (default is 0.07).
+        --n_iter (int): Number of iterations (default is 15).
+        --wandb_key (str): API key for wandb (default is '').
+        --test (bool): Whether to test the model (default is False).
+        --wandb_group (str): Group name for wandb (default is 'PQ').
+        --submit (bool): Whether to create a submission (default is False).
+        Output:
+        Saves a pickled matrix factorization model to the current directory as 'model.pkl'.
+        """
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", type=Path, default="../../data")
     parser.add_argument("--output_dir", type=Path, default="")
@@ -32,8 +49,10 @@ if __name__ == "__main__":
 
     data = pd.read_csv(args.data_dir / "train.csv")
 
+    # Split the data into a training and a test set
     train_data, test_data = get_train_test(data, args.test)
 
+    # Create matrix factorization model
     pq_model = PQ(len(data["user_id"].unique()), len(data["book_id"].unique()),
                   d=args.d, lr=args.lr, P_lambda=args.P_lambda, Q_lambda=args.Q_lambda)
 
@@ -57,9 +76,7 @@ if __name__ == "__main__":
         with open(args.output_dir / "model.pkl", "rb") as f:
             pq_model = pickle.load(f)
         test_data = pd.read_csv(args.data_dir / "test.csv")
-        # test_data, _ = get_train_test(test_data, False)
         test_pairs = np.array([[user_map[u], item_map[b]] for u, b in zip(test_data['user_id'], test_data['book_id'])])
-        # print(test_pairs)
         predictions = pq_model.predict(test_pairs)
 
         sample_submission = pd.read_csv(args.data_dir / "sample_submission.csv")

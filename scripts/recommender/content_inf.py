@@ -13,6 +13,26 @@ from utils import get_train_test
 from src.bm25.bm25 import BM25
 
 if __name__ == "__main__":
+    """
+    Script for training and testing the hybrid model using both matrix factorization and content-based filtering (BM25).
+    Command-line Arguments:
+        --token_dir (Path): Path to the directory containing the tokenized data (default is 'data/tokenized_data').
+        --output_dir (Path): Path to the directory where the model will be saved (default is 'data').
+        --data_dir (Path): Path to the directory containing the data (default is 'data').
+        --d (int): Dimension of the latent space (default is 8).
+        --lr (float): Learning rate (default is 0.004).
+        --P_lambda (float): Regularization parameter for P (default is 0.494).
+        --Q_lambda (float): Regularization parameter for Q (default is 0.132).
+        --n_iter (int): Number of iterations (default is 20).
+        --wandb_key (str): API key for wandb (default is '').
+        --test (bool): Whether to test the model (default is False).
+        --wandb_group (str): Group name for wandb (default is 'PQ').
+        --submit (bool): Whether to create a submission (default is False).
+        --k (int): Number of similar items to consider in the content-based filtering (default is 50).
+        --skip_train (bool): Whether to skip training and load the model from the output directory (default is False).
+        Output:
+        Saves a pickled matrix factorization model to the output directory as 'pq_model.pkl'.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("-dir", "--token_dir", type=Path, default = "data/tokenized_data")
     parser.add_argument("--output_dir", type=Path, default = "data")
@@ -36,6 +56,7 @@ if __name__ == "__main__":
         wandb.login()
     wandb.init(project="DIS2", group=args.wandb_group, config=vars(args))
 
+    # Load the tokenized data and book ids , list of authors
     with open(f'{args.token_dir}/tokens.pkl', "rb") as f:
         docs = pickle.load(f)
 
@@ -49,17 +70,21 @@ if __name__ == "__main__":
         "k1": 1.4, "b": 0.5
     }
 
+    # Create and fit the BM25 model
     bm25_ind = BM25(k1=lang_params["k1"], b=lang_params["b"])
     bm25_ind.fit(docs)
 
     data = pd.read_csv(args.data_dir / "train.csv")
 
+    # Split the data into a training and a test set
     train_data, test_data = get_train_test(data, args.test)
 
     if args.skip_train:
         with open(args.output_dir / "pq_model.pkl", "rb") as f:
             pq_model = pickle.load(f)
     else:
+        # Create matrix factorization model and fit it
+
         pq_model = PQ(len(data["user_id"].unique()), len(data["book_id"].unique()),
                       d=args.d, lr=args.lr, P_lambda=args.P_lambda, Q_lambda=args.Q_lambda)
         print("Fitting model")
@@ -82,6 +107,8 @@ if __name__ == "__main__":
     book_id_to_index = {book_id: i for i, book_id in enumerate(book_ids)}
     # for k_ in range(1, args.k):
     R_ = R.copy()
+
+    # For each book, find the k most similar books and replace the predicted rating with the average of the ratings of the k most similar books in the training set
     for b_id in tqdm(item_id, total=len(item_id)):
         if b_id not in book_id_to_index:
             continue
@@ -110,6 +137,7 @@ if __name__ == "__main__":
         R_[:, item_map[b_id]] = np.sum(R[:, inds] * scores, axis=1)
     R_[~np.isnan(train_data)] = train_data[~np.isnan(train_data)]
 
+    # if the model is tested, print the RMSE
     if args.test:
         print(np.sqrt(np.nanmean((test_data - R_)**2)))
         error = test_data - R_
@@ -117,6 +145,7 @@ if __name__ == "__main__":
             pickle.dump(error, f)
     # print(k_, np.sqrt(np.nanmean((test_data - R_)**2)))
 
+    # To create a submission, predict the ratings for the test set and save them in a csv file
     if args.submit:
 
         # user_id = data['user_id'].unique()
