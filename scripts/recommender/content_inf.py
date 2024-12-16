@@ -55,7 +55,7 @@ if __name__ == "__main__":
     parser.add_argument("--skip_train", action="store_true")
     parser.add_argument("--content_user", action="store_true")
     parser.add_argument("--k_", type=int, default=300)
-    parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--include_authors", action="store_true")
     args = parser.parse_args()
 
