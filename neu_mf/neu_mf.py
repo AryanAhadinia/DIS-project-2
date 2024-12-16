@@ -87,7 +87,7 @@ class NeuMF(nn.Module):
         for layer_size in mlp_layers[1:]:
             mlp_modules.append(nn.Linear(input_size, layer_size))
             mlp_modules.append(nn.ReLU())
-            mlp_modules.append(nn.Dropout(dropout))  # Add Dropout layer
+            mlp_modules.append(nn.Dropout(dropout))
             input_size = layer_size
         self.mlp = nn.Sequential(*mlp_modules)
 
@@ -128,7 +128,6 @@ def train_with_train_val_split(
     patience,
 ):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # print(f"using {device}")
 
     model = NeuMF(num_users, num_items, mf_dim=mf_dim, mlp_layers=mlp_layers, dropout=dropout).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)

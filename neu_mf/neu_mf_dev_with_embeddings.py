@@ -102,25 +102,21 @@ class NeuMF(nn.Module):
 
         self.embedding_dim = embedding_dim
 
-        # GMF Embeddings
         self.user_embedding_gmf = nn.Embedding(num_users, mf_dim)
         self.item_embedding_gmf = nn.Embedding(num_items, mf_dim)
 
-        # MLP Embeddings
         self.user_embedding_mlp = nn.Embedding(num_users, mlp_layers[0] // 2)
         self.item_embedding_mlp = nn.Embedding(num_items, mlp_layers[0] // 2)
 
-        # MLP Layers
         mlp_modules = []
         input_size = mlp_layers[0] + embedding_dim
         for layer_size in mlp_layers[1:]:
             mlp_modules.append(nn.Linear(input_size, layer_size))
             mlp_modules.append(nn.ReLU())
-            mlp_modules.append(nn.Dropout(dropout))  # Add Dropout layer
+            mlp_modules.append(nn.Dropout(dropout))
             input_size = layer_size
         self.mlp = nn.Sequential(*mlp_modules)
 
-        # Predict Layer
         predict_size = mf_dim + mlp_layers[-1]
         self.predict_layer = nn.Linear(predict_size, 1)
 
