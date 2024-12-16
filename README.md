@@ -1,4 +1,4 @@
-# Document Retrieval Project - Team: MAM
+# Recommender system Project - Team: MAM
 
 This repository hosts the implementation of a book recommender system developed as part of the **CS-423 Distributed Information System** course at EPFL. The objective of this project is to design a system capable of predicting user ratings for books. Multiple approaches have been implemented and are detailed in this repository.
 
