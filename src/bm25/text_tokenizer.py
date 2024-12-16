@@ -64,6 +64,8 @@ class BaseTokenizer:
         docs = self.nlp.pipe(
             preprocessed_texts, batch_size=batch_size, n_process=n_process
         )
+
+        # Toknized texts correspond to the title and the lemmatized tokens of the description of the book.
         tokenized_texts = [
             #author_.split() + title.split() +
             title.split() +

@@ -17,17 +17,17 @@ from src.bm25.text_tokenizer import EnglishTokenizer
 
 def main():
     """
-    Processes and tokenizes a text corpus in specified languages.
+    Processes and creates tokenized text data for each book.
 
     Command-line Arguments:
-        -c, --corpus_df (Path): Path to the input corpus JSON file. Required.
-        -o, --output_dir (Path): Path to the directory where output files will be saved. Required.
+        -c, --corpus_df (Path): Path to the CSV file containing the books metadata (default is 'data/clean_data/metadata_clean.csv').
+        -o, --output_dir (Path): Path to the directory where output files will be saved (default is 'data/tokenized_data').
         -b, --batch_size (int): The batch size for tokenization (default is 64).
         --cores (int): The number of processor cores to use for parallel processing (default is 10).
 
 
     Saves:
-        A pickled file containing tokenized text data.
+        A pickled file containing the tokenized texts for each book.
     """
     parser = argparse.ArgumentParser()
 
@@ -46,6 +46,7 @@ def main():
 
     corpus_df = pd.read_csv(args.corpus_df).dropna()
 
+    # Tokenize the texts using the EnglishTokenizer
     tokenizer = EnglishTokenizer()
 
     tokenized_texts = tokenizer.tokenize(corpus_df["author"].tolist(),
@@ -54,8 +55,8 @@ def main():
                                          batch_size=args.batch_size,
                                          n_process=args.cores)
     
-    authors_list = corpus_df["author"].tolist()
 
+    # Save the tokenized texts 
     output_file = (
         args.output_dir
         / f"tokens.pkl"
