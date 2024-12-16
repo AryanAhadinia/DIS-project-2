@@ -1,9 +1,9 @@
-numpy
+numpy<2
 tqdm
 scipy
 scikit-learn
 spacy
-pandas
+pandas>=2.2
 setuptools
 wandb
 langdetect
